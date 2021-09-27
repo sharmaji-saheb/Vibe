@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1086527586768",
+    "project_id": "formal-guru-326206",
+    "storage_bucket": "formal-guru-326206.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086527586768:android:dcb718ba00efad81c5f9d5",
+        "android_client_info": {
+          "package_name": "com.example.minor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1086527586768-2874j8sqn4hjk1j857m8kbfaajdpkt0q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.minor",
+            "certificate_hash": "6b5f60d64c3313d8b15149010bd4480abd7d5116"
+          }
+        },
+        {
+          "client_id": "1086527586768-4s5bvlp7phqa161sh0jr11ek7l2rf1v7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZRZKHpGCSNL6pvKerPZmEu3cccF45rX4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1086527586768-4s5bvlp7phqa161sh0jr11ek7l2rf1v7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
