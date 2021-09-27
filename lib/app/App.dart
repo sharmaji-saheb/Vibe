@@ -18,14 +18,9 @@ class App extends StatelessWidget {
           create: _auth,
         ),
 
-        //google signin provider
         Provider<GoogleSignIn>(
           create: _googleSignIn,
         ),
-
-        Provider<Future<SharedPreferences>>(
-          create: _shared,
-        )
       ],
       child: MaterialApp(
         initialRoute: '/',

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:minor/Login/LoginBloc.dart';
 import 'package:minor/Themes/Fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -19,10 +20,6 @@ class _EmailLoginState extends State<EmailLogin> {
   final _fonts = ThemeFonts();
   late final UserCredential _userCred;
 
-  //error text for text fields
-  String _email_error = '';
-  String _pass_error = '';
-
   //These booleans decide whether to activate login button or not
   bool _s1 = false;
   bool _s2 = false;
@@ -35,56 +32,12 @@ class _EmailLoginState extends State<EmailLogin> {
   final FocusNode _emailnode = FocusNode();
 
   Widget build(BuildContext context) {
+    //Instance of Login Bloc
+    final LoginBloc _bloc = LoginBloc(context);
+
     //instance of Firebaseauth from Provider
     final FirebaseAuth _auth =
         Provider.of<FirebaseAuth>(context, listen: false);
-
-    //if else to set the error message and to activate and deactivate login button
-    if (_email.text == null ||
-        _email.text == '' ||
-        (_email.text.contains('@') && _email.text.contains('.com'))) {
-      _email_error = '';
-      _s1 = true;
-    } else {
-      _email_error = 'Invalid E-Mail';
-      _s1 = false;
-    }
-
-    if (_email.text == null ||
-        !(_email.text.contains('@') && _email.text.contains('.com'))) {
-      _s1 = false;
-    } else {
-      _s1 = true;
-    }
-
-    if (_pass.text == '' || _pass.text == null || _pass.text.length >= 6) {
-      _pass_error = '';
-    } else {
-      _pass_error = 'PassWord too Short';
-    }
-
-    if (_pass.text == null || _pass.text.length < 6) {
-      _s2 = false;
-    } else {
-      _s2 = true;
-    }
-
-    if (_s1 && _s2) {
-      _loginButtonOnPressed = () async {
-        print(_email.text);
-        print(_pass.text);
-        try {
-          _userCred = await _auth
-              .signInWithEmailAndPassword(
-                  email: _email.text, password: _pass.text)
-              .then((value) => _pop(value));
-        } catch (e) {
-          print(e.toString());
-        }
-      };
-    } else {
-      _loginButtonOnPressed = null;
-    }
 
     //All Widgets
     return SafeArea(
@@ -157,13 +110,13 @@ class _EmailLoginState extends State<EmailLogin> {
                   ),
 
                   //Email text field
-                  _emailText(),
+                  _emailText(context, _bloc),
                   SizedBox(
                     height: 10,
                   ),
 
                   //password text field
-                  _passText(),
+                  _passText(context, _bloc),
                   SizedBox(
                     height: 10,
                   ),
@@ -207,62 +160,61 @@ class _EmailLoginState extends State<EmailLogin> {
   }
 
   //Password Text Field
-  Widget _passText() {
-    return TextField(
-      focusNode: _passnode,
+  Widget _passText(BuildContext context, LoginBloc _bloc) {
+    return StreamBuilder(
+      stream: _bloc.lpass_stream,
+      initialData: '',
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        return TextField(
+          focusNode: _passnode,
 
-      //Functionality of on editing complete button
-      onEditingComplete: () async {
-        if (_loginButtonOnPressed == null) {
-          return null;
-        } else {
-          FocusScope.of(context).unfocus();
-          await Future.delayed(Duration(milliseconds: 50));
-          _loginButtonOnPressed!();
-        }
+          //setting state on changes to set error text
+          onChanged: (value) {
+            _bloc.lpass_sink.add(value);
+          },
+          controller: _pass,
+          obscureText: true,
+          cursorColor: Colors.white,
+          style: _fonts.loginText(),
+          decoration: InputDecoration(
+            errorText: snapshot.data,
+            prefixIcon: Padding(
+              padding: EdgeInsets.only(
+                left: 10,
+                right: 7,
+                top: 7,
+                bottom: 7,
+              ),
+              child: Icon(
+                Icons.vpn_key_outlined,
+                color: Colors.white,
+                size: 42,
+              ),
+            ),
+            contentPadding: EdgeInsets.only(
+              right: 7,
+              left: 5,
+            ),
+            fillColor: Color(0xff474A51),
+            filled: true,
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.all(
+                Radius.circular(7),
+              ),
+            ),
+          ),
+        );
       },
-
-      //setting state on changes to set error text
-      onChanged: (value) {
-        setState(() {});
-      },
-      controller: _pass,
-      obscureText: true,
-      cursorColor: Colors.white,
-      style: _fonts.loginText(),
-      decoration: InputDecoration(
-        errorText: _pass_error,
-        prefixIcon: Padding(
-          padding: EdgeInsets.only(
-            left: 10,
-            right: 7,
-            top: 7,
-            bottom: 7,
-          ),
-          child: Icon(
-            Icons.vpn_key_outlined,
-            color: Colors.white,
-            size: 42,
-          ),
-        ),
-        contentPadding: EdgeInsets.only(
-          right: 7,
-          left: 5,
-        ),
-        fillColor: Color(0xff474A51),
-        filled: true,
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.all(
-            Radius.circular(7),
-          ),
-        ),
-      ),
     );
   }
 
   //Email text Field
-  Widget _emailText() {
+  Widget _emailText(BuildContext context, LoginBloc _bloc) {
+    return StreamBuilder(
+      stream: _bloc.lemail_stream,
+      initialData: '',
+      builder: (context, AsyncSnapshot<String> snapshot) {
     return TextField(
       autofocus: true,
       focusNode: _emailnode,
@@ -274,14 +226,14 @@ class _EmailLoginState extends State<EmailLogin> {
 
       //setting state on changes to set error text
       onChanged: (value) {
-        setState(() {});
+        _bloc.lemail_sink.add(value);
       },
       controller: _email,
       cursorColor: Colors.white,
       style: _fonts.loginText(),
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
-        errorText: _email_error,
+        errorText: snapshot.data,
         prefixIcon: Padding(
           padding: EdgeInsets.only(
             left: 10,
@@ -308,7 +260,7 @@ class _EmailLoginState extends State<EmailLogin> {
           ),
         ),
       ),
-    );
+    );},);
   }
 
   //pop function to navigate back after succeful login
