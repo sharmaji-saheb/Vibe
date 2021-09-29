@@ -30,10 +30,17 @@ class EmailLoginBloc {
     );
 
     emailSignIn = (String email, String pass) async {
-    UserCredential user_creds = await _auth.signInWithEmailAndPassword(email: email, password: pass);
-    FocusScope.of(context).unfocus();
-    Navigator.of(context).pop();
-  };
+      UserCredential user_creds =
+          await _auth.signInWithEmailAndPassword(email: email, password: pass);
+
+      //storing uid for future and accessing user information
+      SharedPreferences shared = await SharedPreferences.getInstance();
+      shared.setString('uid', user_creds.user!.uid);
+
+      //Navigating to Landing Page
+      FocusScope.of(context).unfocus();
+      Navigator.of(context).pop();
+    };
   }
 
   /*
@@ -44,7 +51,6 @@ class EmailLoginBloc {
 
   //Firebase auth instance
   late final FirebaseAuth _auth;
-
 
   //Stream controller and stream for login password text field
   late StreamController<String> _lpass_controller =

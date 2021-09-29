@@ -30,11 +30,18 @@ class EmailRegisterBloc {
     );
 
     emailRegister = (String email, String pass) async {
-    UserCredential user_creds = await _auth.createUserWithEmailAndPassword(email: email, password: pass);
-    FocusScope.of(context).unfocus();
-    Navigator.of(context).pop();
-    Navigator.of(context).pop();
-  };
+      UserCredential user_creds = await _auth.createUserWithEmailAndPassword(
+          email: email, password: pass);
+
+      //storing uid for future and accessing user information
+      SharedPreferences shared = await SharedPreferences.getInstance();
+      shared.setString('uid', user_creds.user!.uid);
+
+      //Navigating to landing page
+      FocusScope.of(context).unfocus();
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    };
   }
 
   /*
@@ -45,7 +52,6 @@ class EmailRegisterBloc {
 
   //Firebase auth instance
   late final FirebaseAuth _auth;
-
 
   //Stream controller and stream for login password text field
   late StreamController<String> _lpass_controller =
@@ -78,8 +84,6 @@ class EmailRegisterBloc {
       sink.add('Enter valid Email');
     }
   });
-
-  
 
   //Stream for login button
   late final Stream<bool> _login_button;

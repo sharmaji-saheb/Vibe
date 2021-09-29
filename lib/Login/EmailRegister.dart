@@ -65,7 +65,7 @@ class _EmailLoginState extends State<EmailRegister> {
           
           backgroundColor: Color(0xff292B2F),
           title: Text(
-            'Login',
+            'Register',
             style: _fonts.scaffoldTitle(context),
           ),
           toolbarHeight: MediaQuery.of(context).size.height * 0.1,
@@ -145,7 +145,7 @@ class _EmailLoginState extends State<EmailRegister> {
               //_loginButtonOnPressed is login Function()?
               onPressed: _func,
               child: Text(
-                'Login',
+                'Register',
                 style: _fonts.loginButton(35),
               ),
               style: ButtonStyle(
