@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,7 +35,21 @@ class EmailRegisterBloc {
 
       //storing uid for future and accessing user information
       SharedPreferences shared = await SharedPreferences.getInstance();
+
+      print("${user_creds.user!.uid}, ${user_creds.user!.displayName!}, ${user_creds.user!.email!}");
+
       shared.setString('uid', user_creds.user!.uid);
+      shared.setString('name', user_creds.user!.displayName!);
+      shared.setString('email', user_creds.user!.email!);
+
+      //creating data collection in firestore for user
+      FirebaseFirestore _firestore = FirebaseFirestore.instance;
+      await _firestore.collection('userInfo').doc(shared.getString('uid')!).set(
+        {
+          'name': shared.getString('name'),
+          'email': shared.getString('email'),
+        },
+      );
 
       //Navigating to landing page
       FocusScope.of(context).unfocus();

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,16 +30,21 @@ class EmailLoginBloc {
     );
 
     emailSignIn = (String email, String pass) async {
-      UserCredential user_creds =
-          await _auth.signInWithEmailAndPassword(email: email, password: pass);
+      try {
+        UserCredential user_creds = await _auth.signInWithEmailAndPassword(
+            email: email, password: pass);
+        //storing uid for future and accessing user information
+        SharedPreferences shared = await SharedPreferences.getInstance();
+        shared.setString('uid', user_creds.user!.uid);
 
-      //storing uid for future and accessing user information
-      SharedPreferences shared = await SharedPreferences.getInstance();
-      shared.setString('uid', user_creds.user!.uid);
-
-      //Navigating to Landing Page
-      FocusScope.of(context).unfocus();
-      Navigator.of(context).pop();
+        //Navigating to Landing Page
+        FocusScope.of(context).unfocus();
+        Navigator.of(context).pop();
+      } catch (e) {
+        AlertDialog(
+          content: Text(e.toString()),
+        );
+      }
     };
   }
 

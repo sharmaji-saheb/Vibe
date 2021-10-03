@@ -36,6 +36,7 @@ dependencies:
   shared_preferences:
   dropdownfield:
   rxdart:
+  cloud_firestore:
 
 dev_dependencies:
   flutter_test:

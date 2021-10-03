@@ -153,6 +153,7 @@ class _EmailLoginState extends State<EmailLogin> {
             if (snapshot.data == null || _email.text == '' || _pass.text == '') {
             } else if (snapshot.data!) {
               _func = (){
+                print(_email.text);
                 _bloc.emailSignIn(_email.text, _pass.text);
               };
             }

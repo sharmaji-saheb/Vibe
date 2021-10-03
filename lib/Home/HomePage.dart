@@ -1,5 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:minor/Themes/Fonts.dart';
@@ -18,12 +18,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   //tab controller
   late final TabController _tab_controller;
 
-  late final SharedPreferences shared;
-
   @override
   void initState() {
     super.initState();
-    _tab_controller = TabController(vsync: this, length: 2, initialIndex: 0);
+    _tab_controller = TabController(vsync: this, length: 2, initialIndex: 1);
   }
 
   //Themes and Fonts
@@ -49,7 +47,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   await _auth.signOut();
                 } else {
                   _auth.signOut();
-                  shared.remove('uid');
+                  SharedPreferences _shared = await SharedPreferences.getInstance();
+                  _shared.remove('uid');
                 }
               },
               icon: Icon(
@@ -63,11 +62,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             indicatorSize: TabBarIndicatorSize.tab,
             unselectedLabelColor: Colors.red,
             indicator: BoxDecoration(
-                color: Color(0xff2E3036),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  topRight: Radius.circular(5),
-                )),
+              color: Color(0xff2E3036),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(5),
+                topRight: Radius.circular(5),
+              ),
+            ),
             controller: _tab_controller,
             tabs: [
               Padding(
@@ -100,33 +100,57 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         //stack having children:-
         //container for background
         //and Padding with child column with login buttons
-        body: FutureBuilder(
+        body: FutureBuilder<SharedPreferences>(
           future: SharedPreferences.getInstance(),
           builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
             if (snapshot.data == null) {
               return CircularProgressIndicator();
             }
-            return Stack(
-              children: [
-                //Container for background
-                Container(
-                  color: Color(0xff2E3036),
-                ),
 
-                //TabView
-                TabBarView(
-                  physics: BouncingScrollPhysics(),
-                  controller: _tab_controller,
+            CollectionReference collectionReference = FirebaseFirestore.instance
+                .collection('UserInfo');;
+            return FutureBuilder<DocumentSnapshot>(
+              future: collectionReference.doc(snapshot.data!.getString('uid')).get(),
+              builder: (context, AsyncSnapshot<DocumentSnapshot> snap) {
+                if (snap == null) {
+                  print('null');
+                  return CircularProgressIndicator();
+                }
+                if (snap.data == null) {
+                  print('null');
+                  return CircularProgressIndicator();
+                }
+                Map<String, dynamic> data =
+                    snap.data!.data() as Map<String, dynamic>;
+                return Stack(
                   children: [
+                    //Container for background
                     Container(
-                      color: Colors.yellow,
-                      height: 300,
-                      width: 300,
+                      color: Color(0xff2E3036),
                     ),
-                    Text(snapshot.data!.getString('uid')!),
+
+                    //TabView
+                    TabBarView(
+                      physics: BouncingScrollPhysics(),
+                      controller: _tab_controller,
+                      children: [
+                        Container(
+                          color: Colors.yellow,
+                          height: 300,
+                          width: 300,
+                        ),
+                        Container(
+                          child: Column(
+                            children: [
+                              Text('data')
+                            ],
+                          ),
+                        )
+                      ],
+                    )
                   ],
-                )
-              ],
+                );
+              },
             );
           },
         ),
