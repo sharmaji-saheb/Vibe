@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EmailRegisterBloc {
@@ -29,38 +30,87 @@ class EmailRegisterBloc {
       },
     );
 
-    emailRegister = (String email, String pass) async {
-      UserCredential user_creds = await _auth.createUserWithEmailAndPassword(
-          email: email, password: pass);
+    _landingStreamController = Provider.of<StreamController<int>>(context, listen: false);
 
-      //storing uid for future and accessing user information
-      SharedPreferences shared = await SharedPreferences.getInstance();
+    emailRegister = (String _email, String _pass) async {
+      //signing in
+      await _auth
+          .createUserWithEmailAndPassword(email: _email, password: _pass)
+          .then(
+        (user_creds) {
+          //user id
+          String _uid = user_creds.user!.uid;
 
-      print("${user_creds.user!.uid}, ${user_creds.user!.displayName!}, ${user_creds.user!.email!}");
+          //extracting possible name from email
+          int _atIndex = _email.indexOf('@');
+          String _name = _email.substring(0, _atIndex);
 
-      shared.setString('uid', user_creds.user!.uid);
-      shared.setString('name', user_creds.user!.displayName!);
-      shared.setString('email', user_creds.user!.email!);
+          //storing user id for accessing user data
+          SharedPreferences.getInstance().then((_shared) {
+            _shared.setString('uid', _uid);
 
-      //creating data collection in firestore for user
-      FirebaseFirestore _firestore = FirebaseFirestore.instance;
-      await _firestore.collection('userInfo').doc(shared.getString('uid')!).set(
-        {
-          'name': shared.getString('name'),
-          'email': shared.getString('email'),
+            //initializing storage in firestore
+            FirebaseFirestore _firestore = FirebaseFirestore.instance;
+            _firestore.collection(_uid).doc('info').set(
+              {
+                'name': _name,
+                'email': _email,
+              },
+            );
+
+            //Navigating to landing page
+            _landingStreamController.sink.add(2);
+            FocusScope.of(context).unfocus();
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          }).onError((error, stackTrace) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('error'),
+                  content: Text(error.toString()),
+                  actions: [
+                    TextButton(
+                      child: Text('ok'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                );
+              },
+            );
+          });
+        },
+      ).onError(
+        (error, stackTrace) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('error'),
+                content: Text(error.toString()),
+                actions: [
+                  TextButton(
+                    child: Text('ok'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            },
+          );
         },
       );
-
-      //Navigating to landing page
-      FocusScope.of(context).unfocus();
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
     };
   }
 
   /*
   ***DECLARATION***
   */
+  late final StreamController<int> _landingStreamController;
   //Build Context
   late final BuildContext context;
 

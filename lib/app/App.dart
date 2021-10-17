@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -20,6 +22,10 @@ class App extends StatelessWidget {
         Provider<GoogleSignIn>(
           create: _googleSignIn,
         ),
+
+        Provider<StreamController<int>>(
+          create: _landingStatusStream,
+        ),
       ],
       child: MaterialApp(
         initialRoute: '/',
@@ -39,5 +45,9 @@ class App extends StatelessWidget {
         'https://www.googleapis.com/auth/drive',
       ],
     );
+  }
+
+  StreamController<int> _landingStatusStream(BuildContext context) {
+    return StreamController<int>();
   }
 }

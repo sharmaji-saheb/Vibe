@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
+    final StreamController<int> _landingPageStream =
+        Provider.of<StreamController<int>>(context, listen: false);
     //FutureBuilder to make sure to intialize Firebase
 
     return FutureBuilder(
@@ -34,16 +37,30 @@ class _LandingPageState extends State<LandingPage> {
           //StreamBuilder with stream for authentication status changes.
           //It decides whether to show Login page or Home page
 
-          return StreamBuilder(
-            stream: Provider.of<FirebaseAuth>(context, listen: false)
-                .authStateChanges(),
-            builder: (context, AsyncSnapshot<User?> snap) {
-              if (!snap.hasData || snap.data == null) {
-                //returns Login Page
-                return LoginPage();
-              } else {
-                return HomePage();
-              }
+          return StreamBuilder<int>(
+            initialData: 0,
+            stream: _landingPageStream.stream,
+            builder: (context, AsyncSnapshot<int> loginSnapshot) {
+              return StreamBuilder(
+                stream: Provider.of<FirebaseAuth>(context, listen: false)
+                    .authStateChanges(),
+                builder: (context, AsyncSnapshot<User?> snap) {
+                  print(loginSnapshot.data);
+                  print(snap.data.toString());
+                  if ((!snap.hasData || snap.data == null) && loginSnapshot.data == 0) {
+                    //returns Login Page
+                    return LoginPage();
+                  } else if (snap.data != null && loginSnapshot.data == 0){
+                    return HomePage();
+                  } else if(loginSnapshot.data == 1 && snap.data == null ){
+                    return LoginPage();
+                  } else if(loginSnapshot.data == 2 && snap.data != null){
+                    return HomePage();
+                  }
+
+                  return CircularProgressIndicator();
+                },
+              );
             },
           );
         }

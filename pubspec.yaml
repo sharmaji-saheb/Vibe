@@ -34,7 +34,6 @@ dependencies:
   google_sign_in:
   google_fonts:
   shared_preferences:
-  dropdownfield:
   rxdart:
   cloud_firestore:
 

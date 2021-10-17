@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:minor/Login/EmailLoginBloc.dart';
+import 'package:minor/Login/LoginUIComponents.dart';
 import 'package:minor/Themes/Fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -21,16 +22,14 @@ class _EmailLoginState extends State<EmailLogin> {
   //Instance of ThemeFonts class of Fonts and Themes
   final _fonts = ThemeFonts();
 
-  late final UserCredential _userCred;
+  //ui components
+  LoginUIComponents _components = LoginUIComponents();
 
-  //onpressed function for login button
-  Function()? _loginButtonOnPressed = null;
+  late final UserCredential _userCred;
 
   //Focus nodes for text fields
   final FocusNode _passnode = FocusNode();
   final FocusNode _emailnode = FocusNode();
-
-  Function()? _func = null;
 
   /*
   ***BUILD FUNCTION***
@@ -38,10 +37,6 @@ class _EmailLoginState extends State<EmailLogin> {
   Widget build(BuildContext context) {
     //Instance of Login Bloc
     final EmailLoginBloc _bloc = EmailLoginBloc(context);
-
-    //instance of Firebaseauth from Provider
-    final FirebaseAuth _auth =
-        Provider.of<FirebaseAuth>(context, listen: false);
 
     //All Widgets
     return SafeArea(
@@ -114,19 +109,68 @@ class _EmailLoginState extends State<EmailLogin> {
                   ),
 
                   //Email text field
-                  _emailText(context, _bloc),
+                  _components.loginTextFields(
+                    _bloc,
+                    () {
+                      FocusScope.of(context).requestFocus(_passnode);
+                    },
+                    (value) {
+                      _bloc.lemail_sink.add(value);
+                    },
+                    _bloc.lemail_stream,
+                    _emailnode,
+                    _email,
+                    _fonts.loginText(),
+                    Icon(
+                      Icons.email_outlined,
+                      color: Colors.white,
+                      size: 42,
+                    ),
+                    false,
+                    TextInputType.emailAddress,
+                  ),
+
                   SizedBox(
                     height: 10,
                   ),
 
                   //password text field
-                  _passText(context, _bloc),
+                  _components.loginTextFields(
+                    _bloc,
+                    () {
+                      FocusScope.of(context).requestFocus(_passnode);
+                    },
+                    (value) {
+                      _bloc.lpass_sink.add(value);
+                    },
+                    _bloc.lpass_stream,
+                    _passnode,
+                    _pass,
+                    _fonts.loginText(),
+                    Icon(
+                      Icons.vpn_key_outlined,
+                      color: Colors.white,
+                      size: 42,
+                    ),
+                    true,
+                    TextInputType.text,
+                  ),
+
                   SizedBox(
                     height: 10,
                   ),
 
                   //Login Button
-                  _loginButton(context, _bloc),
+                  _components.loginButton(
+                    context,
+                    _bloc,
+                    () {
+                      _bloc.emailSignIn(_email.text, _pass.text);
+                    },
+                    _email,
+                    _pass,
+                    'Login',
+                  ),
                   Expanded(child: SizedBox())
                 ],
               ),
@@ -136,8 +180,19 @@ class _EmailLoginState extends State<EmailLogin> {
       ),
     );
   }
+}
 
-  //Login button Field
+
+
+
+
+
+
+/*
+  ****FOR REFERENCE OF PAST CODE****
+*/
+
+/*//Login button Field
   Widget _loginButton(BuildContext context, EmailLoginBloc _bloc) {
     //ClipRRect for Rounded Border
     return ClipRRect(
@@ -149,11 +204,11 @@ class _EmailLoginState extends State<EmailLogin> {
           stream: _bloc.login_button,
           builder: (context, AsyncSnapshot<bool> snapshot) {
             _func = null;
-            print(snapshot.data);
-            if (snapshot.data == null || _email.text == '' || _pass.text == '') {
+            if (snapshot.data == null ||
+                _email.text == '' ||
+                _pass.text == '') {
             } else if (snapshot.data!) {
-              _func = (){
-                print(_email.text);
+              _func = () {
                 _bloc.emailSignIn(_email.text, _pass.text);
               };
             }
@@ -176,113 +231,4 @@ class _EmailLoginState extends State<EmailLogin> {
         ),
       ),
     );
-  }
-
-  //Password Text Field
-  Widget _passText(BuildContext context, EmailLoginBloc _bloc) {
-    return StreamBuilder(
-      stream: _bloc.lpass_stream,
-      initialData: '',
-      builder: (context, AsyncSnapshot<String> snapshot) {
-        return TextField(
-          onEditingComplete: _func,
-          focusNode: _passnode,
-
-          //setting state on changes to set error text
-          onChanged: (value) {
-            _bloc.lpass_sink.add(value);
-          },
-          controller: _pass,
-          obscureText: true,
-          cursorColor: Colors.white,
-          style: _fonts.loginText(),
-          decoration: InputDecoration(
-            errorText: snapshot.data,
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(
-                left: 10,
-                right: 7,
-                top: 7,
-                bottom: 7,
-              ),
-              child: Icon(
-                Icons.vpn_key_outlined,
-                color: Colors.white,
-                size: 42,
-              ),
-            ),
-            contentPadding: EdgeInsets.only(
-              right: 7,
-              left: 5,
-            ),
-            fillColor: Color(0xff474A51),
-            filled: true,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.all(
-                Radius.circular(7),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  //Email text Field
-  Widget _emailText(BuildContext context, EmailLoginBloc _bloc) {
-    return StreamBuilder(
-      stream: _bloc.lemail_stream,
-      initialData: '',
-      builder: (context, AsyncSnapshot<String> snapshot) {
-        return TextField(
-          autofocus: true,
-          focusNode: _emailnode,
-
-          //Functionality of on editing complete button
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(_passnode);
-          },
-
-          //setting state on changes to set error text
-          onChanged: (value) {
-            _bloc.lemail_sink.add(value);
-          },
-          controller: _email,
-          cursorColor: Colors.white,
-          style: _fonts.loginText(),
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            errorText: snapshot.data,
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(
-                left: 10,
-                right: 7,
-                top: 7,
-                bottom: 7,
-              ),
-              child: Icon(
-                Icons.email_outlined,
-                color: Colors.white,
-                size: 42,
-              ),
-            ),
-            contentPadding: EdgeInsets.only(
-              right: 7,
-              left: 5,
-            ),
-            fillColor: Color(0xff474A51),
-            filled: true,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.all(
-                Radius.circular(7),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-}
+  }*/
