@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,22 +29,52 @@ class EmailLoginBloc {
       },
     );
 
+    _landingStreamController = Provider.of<StreamController<int>>(context, listen: false);
+
     emailSignIn = (String email, String pass) async {
-    UserCredential user_creds = await _auth.signInWithEmailAndPassword(email: email, password: pass);
-    FocusScope.of(context).unfocus();
-    Navigator.of(context).pop();
-  };
+      _auth
+          .signInWithEmailAndPassword(email: email, password: pass)
+          .then((user_creds) async {
+        //storing uid for future and accessing user information
+        SharedPreferences shared = await SharedPreferences.getInstance();
+        shared.setString('uid', user_creds.user!.uid);
+
+        //Navigating to Landing Page
+        _landingStreamController.sink.add(2);
+        FocusScope.of(context).unfocus();
+        Navigator.of(context).pop();
+      }).onError((error, stackTrace) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('error'),
+              content: Text(error.toString()),
+              actions: [
+                TextButton(
+                  child: Text('ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          },
+        );
+      });
+    };
   }
 
   /*
   ***DECLARATION***
   */
+  late final StreamController<int> _landingStreamController;
+
   //Build Context
   late final BuildContext context;
 
   //Firebase auth instance
   late final FirebaseAuth _auth;
-
 
   //Stream controller and stream for login password text field
   late StreamController<String> _lpass_controller =
