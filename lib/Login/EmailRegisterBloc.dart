@@ -30,7 +30,8 @@ class EmailRegisterBloc {
       },
     );
 
-    _landingStreamController = Provider.of<StreamController<int>>(context, listen: false);
+    _landingStreamController =
+        Provider.of<StreamController<int>>(context, listen: false);
 
     emailRegister = (String _email, String _pass) async {
       //signing in
@@ -51,10 +52,23 @@ class EmailRegisterBloc {
 
             //initializing storage in firestore
             FirebaseFirestore _firestore = FirebaseFirestore.instance;
-            _firestore.collection(_uid).doc('info').set(
+            _firestore.collection('publicInfo').doc(_uid).set(
               {
                 'name': _name,
                 'email': _email,
+              },
+            );
+
+            _firestore.collection('info').doc(_uid).set(
+              {
+                'name': _name,
+                'email': _email,
+              },
+            );
+
+            _firestore.collection('friends').doc(_uid).set(
+              {
+                'dummy': 'dummy',
               },
             );
 

@@ -36,6 +36,8 @@ dependencies:
   shared_preferences:
   rxdart:
   cloud_firestore:
+  sqflite:
+  path_provider:
 
 dev_dependencies:
   flutter_test:

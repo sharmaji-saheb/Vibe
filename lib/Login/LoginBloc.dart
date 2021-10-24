@@ -56,16 +56,28 @@ class LoginBloc {
 
       print('\n\n\n\n\n\n\n${_name} ${_email}\n\n\n\n\n\n');
 
-      FirebaseFirestore.instance.collection(_uid).doc('info').get().then((doc) {
+      FirebaseFirestore.instance.collection('info').doc(_uid).get().then((doc) {
         //if user signed in first time
-        //and hence have no data in firestore
         if (!doc.exists) {
           //initializing storage in firestore
           FirebaseFirestore _firestore = FirebaseFirestore.instance;
-          _firestore.collection(_uid).doc('info').set(
+          _firestore.collection('info').doc(_uid).set(
             {
               'name': _name,
               'email': _email,
+            },
+          );
+
+          _firestore.collection('publicInfo').doc(_uid).set(
+            {
+              'name': _name,
+              'email': _email,
+            },
+          );
+
+          _firestore.collection('friends').doc(_uid).set(
+            {
+              
             },
           );
         }
