@@ -5,6 +5,7 @@ import 'package:minor/app/App.dart';
 
 Future<void> main() async {
   //initialize firebase
+  
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 

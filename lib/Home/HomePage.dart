@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:minor/Home/HomeBloc.dart';
+import 'package:minor/Home/HomeUI.dart';
 import 'package:minor/Themes/Fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,57 +21,34 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   //Themes and Fonts
   final ThemeFonts _fonts = ThemeFonts();
 
-  String a = '';
-
+  /*
+    *** BUILD***
+  */
   Widget build(BuildContext context) {
+    //BLOC for homepage
+    final HomeBloc _bloc = HomeBloc(context);
+
+    //Decides what to show on landing page
     final StreamController<int> _landingStreamController =
         Provider.of<StreamController<int>>(context, listen: false);
+
     //instance of google sign in
     final GoogleSignIn _google_sign_in =
         Provider.of<GoogleSignIn>(context, listen: false);
+
     //isntance of FirebaseAuth
     final FirebaseAuth _auth =
         Provider.of<FirebaseAuth>(context, listen: false);
 
+    //UI Components of this Page
+    final HomeUI _ui = HomeUI();
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xff2E3036),
-        appBar: AppBar(
-          actions: [
-            TextButton.icon(
-              onPressed: () async {
-                if (await _google_sign_in.isSignedIn()) {
-                  await _google_sign_in.disconnect();
-                  await _auth.signOut().then((value) async {
-                    _landingStreamController.sink.add(1);
-                    SharedPreferences _shared =
-                        await SharedPreferences.getInstance();
-                    _shared.remove('uid');
-                  });
-                } else {
-                  _auth.signOut().then((value) async {
-                    _landingStreamController.sink.add(1);
-                    SharedPreferences _shared =
-                        await SharedPreferences.getInstance();
-                    _shared.remove('uid');
-                  });
-                }
-              },
-              icon: Icon(
-                Icons.logout_outlined,
-                color: Colors.white,
-              ),
-              label: Text('logout'),
-            )
-          ],
-          elevation: 0,
-          backgroundColor: Color(0xff292B2F),
-          title: Text(
-            'Minor',
-            style: _fonts.scaffoldTitle(context),
-          ),
-          toolbarHeight: MediaQuery.of(context).size.height * 0.13,
-        ),
+        appBar: _ui.appBar(context, _bloc),
+
+        floatingActionButton: _ui.addFriend(context),
 
         //stack having children:-
         //container for background
@@ -78,31 +57,41 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           future: SharedPreferences.getInstance(),
           builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
             if (snapshot.data == null) {
-              return CircularProgressIndicator();
+              return Center(
+                child: CircularProgressIndicator(),
+              );
             }
 
             String uid = snapshot.data!.getString('uid')!;
-            print('uid is ${uid}');
 
             CollectionReference collectionReference =
-                FirebaseFirestore.instance.collection(uid);
+                FirebaseFirestore.instance.collection('friends');
 
-            return FutureBuilder<DocumentSnapshot>(
-              future: collectionReference.doc('info').get(),
-              builder: (context, AsyncSnapshot<DocumentSnapshot> snap) {
+            return StreamBuilder<DocumentSnapshot<Object?>>(
+              stream: collectionReference.doc(uid).snapshots( ),
+              builder: (context, AsyncSnapshot<DocumentSnapshot<Object?>> snap) {
                 if (snap == null) {
                   print('null1');
-                  return CircularProgressIndicator();
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
                 if (snap.data == null) {
                   print('null2');
-                  return CircularProgressIndicator();
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
                 // Map<String, dynamic> data =
                 //     snap.data!.data() as Map<String, dynamic>;
+
                 Map<String, dynamic> _data =
                     snap.data!.data() as Map<String, dynamic>;
+                  print(_data);
 
+                List<String> _list = [];
+
+                _data.keys.forEach((k) => _list.add(k));
                 return Stack(
                   children: [
                     //Container for background
@@ -110,15 +99,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       color: Color(0xff2E3036),
                     ),
 
-                    //TabView
-                    Container(
-                      child: Text(
-                        _data.toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                    _ui.friendsList(context, _list),
                   ],
                 );
               },
@@ -129,13 +110,3 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 }
-
-//Logout metthod
-// () async {
-//               if (await _google.isSignedIn()) {
-//                 await _google.disconnect();
-//                 await _auth.signOut();
-//               }else{
-//                 _auth.signOut();
-//               }
-//             },
