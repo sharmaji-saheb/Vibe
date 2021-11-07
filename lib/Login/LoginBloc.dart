@@ -49,10 +49,11 @@ class LoginBloc {
       //storing uid for future and accessing user information
       String _uid = user_creds.user!.uid;
       SharedPreferences shared = await SharedPreferences.getInstance();
-      shared.setString('uid', _uid);
-
       String _name = user_creds.user!.displayName!;
       String _email = user_creds.user!.email!;
+      shared.setString('uid', _uid);
+      shared.setString('name', _name);
+      shared.setString('email', _email);
 
       print('\n\n\n\n\n\n\n${_name} ${_email}\n\n\n\n\n\n');
 
@@ -72,12 +73,6 @@ class LoginBloc {
             {
               'name': _name,
               'email': _email,
-            },
-          );
-
-          _firestore.collection('friends').doc(_uid).set(
-            {
-              
             },
           );
         }

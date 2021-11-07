@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:minor/Home/AddFriendUI.dart';
 import 'package:minor/Home/HomeBloc.dart';
 import 'package:minor/Themes/Fonts.dart';
 
@@ -11,76 +13,17 @@ class HomeUI {
     ***DECLARATIONS***
   */
   final ThemeFonts _fonts = ThemeFonts();
+  final TextEditingController _textEditingController = TextEditingController();
   /*
     ***WIDGETS***
   */
-  Widget bottomSheetSearchBar(
-    dynamic _bloc,
-    void Function()? _func,
-    void Function(String)? onChanged,
-    Stream<String> stream,
-    FocusNode _node,
-    TextEditingController _controller,
-    TextStyle style,
-    Widget child,
-    bool obscured,
-    TextInputType? keyBoardType) {
-    return StreamBuilder(
-      stream: stream,
-      initialData: '',
-      builder: (context, AsyncSnapshot<String> snapshot) {
-        return TextField(
-          onEditingComplete: _func,
-          focusNode: _node,
-
-          //setting state on changes to set error text
-          onChanged: onChanged,
-          controller: _controller,
-          obscureText: obscured,
-          cursorColor: Colors.white,
-          style: style,
-          keyboardType: keyBoardType,
-          decoration: InputDecoration(
-            errorText: snapshot.data,
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(
-                left: 10,
-                right: 7,
-                top: 7,
-                bottom: 7,
-              ),
-              child: child,
-            ),
-            contentPadding: EdgeInsets.only(
-              right: 7,
-              left: 5,
-            ),
-            fillColor: Color(0xff474A51),
-            filled: true,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.all(
-                Radius.circular(7),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   Widget addFriend(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        showSlideUpView(context);
-      },
-      child: Icon(
-        Icons.person_add_outlined,
-      ),
-    );
+    return AddFriend();
   }
 
-  Widget friendsList(BuildContext context, List<String> _list) {
+  Widget chatList(BuildContext context,
+      List<QueryDocumentSnapshot<Object?>> _list, String _email) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: Container(
@@ -97,6 +40,16 @@ class HomeUI {
                 ),
               );
             }
+            List<dynamic> email = _list[index].get('email');
+            String _otherEmail = '';
+            for (String i in email) {
+              if (i == _email) {
+                continue;
+              }
+              _otherEmail = i;
+            }
+            Map<String, dynamic> map = _list[index].get('names');
+            String _name = map[_otherEmail];
             return Container(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
@@ -119,7 +72,7 @@ class HomeUI {
                     SizedBox(
                       width: 20,
                     ),
-                    listTile(_list, index, context),
+                    listTile(_name, _otherEmail, _email, context),
                   ],
                 ),
               ),
@@ -130,11 +83,28 @@ class HomeUI {
     );
   }
 
-  Widget listTile(List<String> _list, int index, BuildContext context) {
+  Widget listTile(
+      String _name, String _otherEmail, String _email, BuildContext context) {
     return Expanded(
       child: GestureDetector(
-        onTap: (){
-          Navigator.of(context).pushNamed('/ChatRoom');
+        onTap: () {
+          FirebaseFirestore.instance
+              .collection('chatRooms')
+              .doc('${_email}&&${_otherEmail}')
+              .get()
+              .then((value) {
+            if (value.exists) {
+              Navigator.of(context).pushNamed(
+                '/ChatRoom',
+                arguments: ['${_email}&&${_otherEmail}', _name],
+              );
+            }else{
+              Navigator.of(context).pushNamed(
+                '/ChatRoom',
+                arguments: ['${_otherEmail}&&${_email}', _name],
+              );
+            }
+          });
         },
         child: Container(
           child: Column(
@@ -142,7 +112,7 @@ class HomeUI {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${_list[index]}',
+                '${_name}',
                 style: _fonts.loginButton(30),
               ),
               SizedBox(
@@ -161,13 +131,12 @@ class HomeUI {
   PreferredSizeWidget? appBar(BuildContext _context, HomeBloc _bloc) {
     return AppBar(
       actions: [
-        TextButton.icon(
-          onPressed: _bloc.signOut,
-          icon: Icon(
+        GestureDetector(
+          onTap: _bloc.signOut,
+          child: Icon(
             Icons.logout_outlined,
             color: Colors.white,
           ),
-          label: Text('logout'),
         )
       ],
       elevation: 0,
@@ -183,28 +152,4 @@ class HomeUI {
   /*
     ***METHODS***
   */
-  showSlideUpView(BuildContext context) {
-    showModalBottomSheet(
-      clipBehavior: Clip.antiAlias,
-      backgroundColor: Color(0xff292B2F),
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(20),
-          topLeft: Radius.circular(20),
-        ),
-      ),
-      builder: (context) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
