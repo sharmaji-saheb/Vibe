@@ -49,6 +49,8 @@ class EmailRegisterBloc {
           //storing user id for accessing user data
           SharedPreferences.getInstance().then((_shared) {
             _shared.setString('uid', _uid);
+            _shared.setString('name', _name);
+            _shared.setString('email', _email);
 
             //initializing storage in firestore
             FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -63,12 +65,6 @@ class EmailRegisterBloc {
               {
                 'name': _name,
                 'email': _email,
-              },
-            );
-
-            _firestore.collection('friends').doc(_uid).set(
-              {
-                'dummy': 'dummy',
               },
             );
 

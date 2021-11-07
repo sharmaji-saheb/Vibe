@@ -62,15 +62,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               );
             }
 
-            String uid = snapshot.data!.getString('uid')!;
+            String _email = snapshot.data!.getString('email')!;
 
             CollectionReference collectionReference =
-                FirebaseFirestore.instance.collection('friends');
+                FirebaseFirestore.instance.collection('chatRooms');
 
-            return StreamBuilder<DocumentSnapshot<Object?>>(
-              stream: collectionReference.doc(uid).snapshots( ),
-              builder: (context, AsyncSnapshot<DocumentSnapshot<Object?>> snap) {
-                if (snap == null) {
+            return StreamBuilder<QuerySnapshot<Object?>>(
+              stream: collectionReference
+                  .where('email', arrayContains: _email)
+                  .orderBy('latestTime', descending: true)
+                  .orderBy('index')
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot<Object?>> snap) {
+                if (!snap.hasData) {
                   print('null1');
                   return Center(
                     child: CircularProgressIndicator(),
@@ -85,13 +89,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 // Map<String, dynamic> data =
                 //     snap.data!.data() as Map<String, dynamic>;
 
-                Map<String, dynamic> _data =
-                    snap.data!.data() as Map<String, dynamic>;
-                  print(_data);
+                List<QueryDocumentSnapshot<Object?>> _data = snap.data!.docs;
+                print('data::::: ${_data}');
 
-                List<String> _list = [];
-
-                _data.keys.forEach((k) => _list.add(k));
                 return Stack(
                   children: [
                     //Container for background
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       color: Color(0xff2E3036),
                     ),
 
-                    _ui.friendsList(context, _list),
+                    _ui.chatList(context, _data, _email),
                   ],
                 );
               },

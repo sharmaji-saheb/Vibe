@@ -15,6 +15,28 @@ class ThemeFonts {
     );
   }
 
+  TextStyle chatScaffoldTitle(BuildContext context) {
+    double _size = MediaQuery.of(context).size.height * 0.1 * 0.3;
+    return GoogleFonts.patuaOne(
+      color: Colors.white,
+      fontSize: _size,
+    );
+  }
+  TextStyle chatTileName() {
+    double _size = 12;
+    return GoogleFonts.ubuntu(
+      color: Colors.white,
+      fontSize: _size,
+    );
+  }
+  TextStyle chatTileMessage() {
+    double _size = 18;
+    return GoogleFonts.ubuntu(
+      color: Colors.white,
+      fontSize: _size,
+    );
+  }
+
   TextStyle loginOptionButtons() {
     double _size = 20;
     return GoogleFonts.ubuntu(

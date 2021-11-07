@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:minor/ChatRoom/ChatRoom.dart';
-import 'package:minor/DB/DbNames.dart';
 import 'package:minor/Landing/LandingPage.dart';
 import 'package:minor/Login/EmailLogin.dart';
 import 'package:minor/Login/EmailRegister.dart';
@@ -23,7 +22,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => EmailRegister());
 
       case '/ChatRoom':
-        return MaterialPageRoute(builder: (_) => ChatRoom());
+        { List? str = args as List?;
+          return MaterialPageRoute(builder: (_) => ChatRoom(args: args,));}
 
       default:
         return errorRoute();

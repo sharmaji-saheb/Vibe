@@ -19,10 +19,12 @@ class App extends StatelessWidget {
           create: _auth,
         ),
 
+        //google sign in
         Provider<GoogleSignIn>(
           create: _googleSignIn,
         ),
 
+        //Stream controlling landing page
         Provider<StreamController<int>>(
           create: _landingStatusStream,
         ),

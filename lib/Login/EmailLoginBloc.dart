@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,11 @@ class EmailLoginBloc {
         //storing uid for future and accessing user information
         SharedPreferences shared = await SharedPreferences.getInstance();
         shared.setString('uid', user_creds.user!.uid);
-
+        DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore.instance.collection('info').doc(user_creds.user!.uid).get();
+        String name = doc.data()!['name'];
+        String email = doc.data()!['email'];
+        shared.setString('email', email);
+        shared.setString('name', name);
         //Navigating to Landing Page
         _landingStreamController.sink.add(2);
         FocusScope.of(context).unfocus();
