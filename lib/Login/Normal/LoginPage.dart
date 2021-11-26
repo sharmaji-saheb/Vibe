@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:minor/Login/LoginBloc.dart';
-import 'package:minor/Login/LoginUIComponents.dart';
+import 'package:minor/Login/Special/SpecialLogin.dart';
 import 'package:minor/Themes/Fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'LoginUIComponents.dart';
+import 'LoginBloc.dart';
 
 class LoginPage extends StatelessWidget {
   //class for fonts and theme
@@ -13,6 +16,12 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     //bloc for login page
     final _bloc = LoginBloc(context);
+
+    //checking mode
+    if(Provider.of<String>(context, listen: false) == 'special'){
+      //If special mode returning special login interface
+      return SpecialLogin();
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -58,7 +67,6 @@ class LoginPage extends StatelessWidget {
 
                   //google signin button
                   _components.loginPageButton(
-                      
                       _bloc.googleSignIn,
                       0xff383D6C,
                       _fonts.loginOptionButtons(),
@@ -73,8 +81,7 @@ class LoginPage extends StatelessWidget {
                     height: 10,
                   ),
                   //email sign in button
-                  _components.loginPageButton(
-                     () {
+                  _components.loginPageButton(() {
                     Navigator.of(context).pushNamed('/EmailLogin');
                   },
                       0xff474A51,

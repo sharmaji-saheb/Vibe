@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +29,7 @@ class HomeBloc {
   late final BuildContext _context;
   late final GoogleSignIn _google_sign_in;
   late final FirebaseAuth _auth;
+  //landing stream for landing page state management
   late final StreamController<int> _landingStreamController;
   late final String? _uid;
   final StreamController<String> _search = StreamController<String>.broadcast();
@@ -57,6 +57,7 @@ class HomeBloc {
     }
   }
 
+  //adding new friend, ie chatroom for new chat
   addFriend(String _otherEmail, String _otherName) {
     print('pressed');
     SharedPreferences.getInstance().then((value) {

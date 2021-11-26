@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:minor/Themes/Fonts.dart';
 
 class ChatList {
   //fonts and theme
   final ThemeFonts _fonts = ThemeFonts();
-
+  final ScrollController _scrollController = ScrollController();
   //Chats List View
   Widget chatList(String? path) {
     //StreamBuilder constantly updating chats
@@ -35,9 +36,13 @@ class ChatList {
           padding: EdgeInsets.symmetric(horizontal: 6),
           //List for chats
           child: ListView.builder(
+            reverse: true,
+            shrinkWrap: true,
+            controller: _scrollController,
             itemCount: index,
             itemBuilder: (context, ind) {
-              Map<String, dynamic> map = snapshot.data!.data()!['${ind}'];
+              int i = index - ind -1;
+              Map<String, dynamic> map = snapshot.data!.data()!['${i}'];
               String message = map['message'];
               String sender = map['sender'];
 

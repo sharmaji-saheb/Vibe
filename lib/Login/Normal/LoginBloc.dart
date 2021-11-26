@@ -55,10 +55,9 @@ class LoginBloc {
       shared.setString('name', _name);
       shared.setString('email', _email);
 
-      print('\n\n\n\n\n\n\n${_name} ${_email}\n\n\n\n\n\n');
-
       FirebaseFirestore.instance.collection('info').doc(_uid).get().then((doc) {
         //if user signed in first time
+        //then creating new firestore documents
         if (!doc.exists) {
           //initializing storage in firestore
           FirebaseFirestore _firestore = FirebaseFirestore.instance;

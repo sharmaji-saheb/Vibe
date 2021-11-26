@@ -3,11 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:minor/Home/HomeBloc.dart';
-import 'package:minor/Home/HomeUI.dart';
+import 'package:minor/Home/Special/SpecialHome.dart';
 import 'package:minor/Themes/Fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'HomeBloc.dart';
+import 'HomeUI.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -28,10 +30,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     //BLOC for homepage
     final HomeBloc _bloc = HomeBloc(context);
 
-    //Decides what to show on landing page
-    final StreamController<int> _landingStreamController =
-        Provider.of<StreamController<int>>(context, listen: false);
-
     //instance of google sign in
     final GoogleSignIn _google_sign_in =
         Provider.of<GoogleSignIn>(context, listen: false);
@@ -42,6 +40,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     //UI Components of this Page
     final HomeUI _ui = HomeUI();
+
+    if(Provider.of<String>(context, listen: false) == 'special'){
+      return SpecialHome();
+    }
 
     return SafeArea(
       child: Scaffold(
