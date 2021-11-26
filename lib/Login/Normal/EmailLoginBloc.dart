@@ -57,7 +57,7 @@ class EmailLoginBloc {
               content: Text(error.toString()),
               actions: [
                 TextButton(
-                  child: Text('ok'),
+                  child: Text('Ok'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },

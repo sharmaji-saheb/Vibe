@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:minor/Login/EmailLoginBloc.dart';
-import 'package:minor/Login/EmailRegisterBloc.dart';
-import 'package:minor/Login/LoginUIComponents.dart';
 import 'package:minor/Themes/Fonts.dart';
 import 'package:provider/provider.dart';
+
+import 'EmailRegisterBloc.dart';
+import 'LoginUIComponents.dart';
 
 class EmailRegister extends StatefulWidget {
   const EmailRegister({Key? key}) : super(key: key);

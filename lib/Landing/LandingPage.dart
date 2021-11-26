@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:minor/Home/HomePage.dart';
+import 'package:minor/Home/Normal/HomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:minor/Login/LoginPage.dart';
+import 'package:minor/Login/Normal/LoginPage.dart';
 import 'package:provider/provider.dart';
 
 /*  

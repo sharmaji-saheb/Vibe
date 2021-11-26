@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:minor/ChatRoom/ChatRoom.dart';
 import 'package:minor/Landing/LandingPage.dart';
-import 'package:minor/Login/EmailLogin.dart';
-import 'package:minor/Login/EmailRegister.dart';
+import 'package:minor/Login/Normal/EmailLogin.dart';
+import 'package:minor/Login/Normal/EmailRegister.dart';
+
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {

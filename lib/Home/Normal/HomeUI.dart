@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:minor/Home/AddFriendUI.dart';
-import 'package:minor/Home/HomeBloc.dart';
+import 'package:minor/Home/Normal/AddFriendUI.dart';
+import 'package:minor/Home/Normal/HomeBloc.dart';
 import 'package:minor/Themes/Fonts.dart';
 
 class HomeUI {
@@ -18,10 +18,12 @@ class HomeUI {
     ***WIDGETS***
   */
 
+  //addfriend ui
   Widget addFriend(BuildContext context) {
     return AddFriend();
   }
 
+  //list of current chatrooms ie friends
   Widget chatList(BuildContext context,
       List<QueryDocumentSnapshot<Object?>> _list, String _email) {
     return Padding(
@@ -53,28 +55,10 @@ class HomeUI {
             return Container(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 55,
-                      width: 55,
-                      decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: new DecorationImage(
-                          fit: BoxFit.fill,
-                          image: new NetworkImage(
-                            "https://i.imgur.com/BoN9kdC.png",
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
+                child: 
                     listTile(_name, _otherEmail, _email, context),
-                  ],
-                ),
+                  
+                
               ),
             );
           },
@@ -83,6 +67,7 @@ class HomeUI {
     );
   }
 
+  //tiles for chat list
   Widget listTile(
       String _name, String _otherEmail, String _email, BuildContext context) {
     return Expanded(
@@ -128,6 +113,7 @@ class HomeUI {
     );
   }
 
+  //appbar for homescreen
   PreferredSizeWidget? appBar(BuildContext _context, HomeBloc _bloc) {
     return AppBar(
       actions: [

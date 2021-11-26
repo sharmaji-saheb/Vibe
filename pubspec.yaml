@@ -38,6 +38,7 @@ dependencies:
   cloud_firestore:
   sqflite:
   path_provider:
+  vibration:
 
 dev_dependencies:
   flutter_test:

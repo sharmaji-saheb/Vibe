@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:minor/Login/EmailLoginBloc.dart';
-import 'package:minor/Login/LoginUIComponents.dart';
+import 'package:minor/Login/Special/SpecialEmailLogin.dart';
 import 'package:minor/Themes/Fonts.dart';
 import 'package:provider/provider.dart';
+import 'EmailLoginBloc.dart';
+import 'LoginUIComponents.dart';
 
 class EmailLogin extends StatefulWidget {
   const EmailLogin({Key? key}) : super(key: key);
@@ -36,7 +37,13 @@ class _EmailLoginState extends State<EmailLogin> {
     //Instance of Login Bloc
     final EmailLoginBloc _bloc = EmailLoginBloc(context);
 
-    //All Widgets
+    //checking mode
+    if(Provider.of<String>(context, listen: false) == 'special'){
+      //if special mode returning special email login interface
+      return SpecialEmailLogin();
+    }
+
+    //normal widgets for email login
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -179,54 +186,3 @@ class _EmailLoginState extends State<EmailLogin> {
     );
   }
 }
-
-
-
-
-
-
-
-/*
-  ****FOR REFERENCE OF PAST CODE****
-*/
-
-/*//Login button Field
-  Widget _loginButton(BuildContext context, EmailLoginBloc _bloc) {
-    //ClipRRect for Rounded Border
-    return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(7)),
-      child: Container(
-        height: 50,
-        child: StreamBuilder(
-          initialData: false,
-          stream: _bloc.login_button,
-          builder: (context, AsyncSnapshot<bool> snapshot) {
-            _func = null;
-            if (snapshot.data == null ||
-                _email.text == '' ||
-                _pass.text == '') {
-            } else if (snapshot.data!) {
-              _func = () {
-                _bloc.emailSignIn(_email.text, _pass.text);
-              };
-            }
-            return ElevatedButton(
-              //_loginButtonOnPressed is login Function()?
-              onPressed: _func,
-              child: Text(
-                'Login',
-                style: _fonts.loginButton(35),
-              ),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (state) {
-                    return Color(0xff383D6C);
-                  },
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }*/

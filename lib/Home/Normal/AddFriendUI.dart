@@ -3,14 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:minor/Themes/Fonts.dart';
 import 'HomeBloc.dart';
 
-class AddFriend extends StatefulWidget {
-  const AddFriend({ Key? key }) : super(key: key);
+//UI for add friend
 
-  @override
-  _AddFriendState createState() => _AddFriendState();
-}
 
-class _AddFriendState extends State<AddFriend> {
+class AddFriend extends StatelessWidget {
   final ThemeFonts _fonts = ThemeFonts();
   Widget build(BuildContext context) {
     return FloatingActionButton(
@@ -23,6 +19,7 @@ class _AddFriendState extends State<AddFriend> {
     );
   }
 
+  //Bottom sheet for adding friend
   showSlideUpView(BuildContext context) {
     showModalBottomSheet(
       isScrollControlled: true,
@@ -36,6 +33,7 @@ class _AddFriendState extends State<AddFriend> {
         ),
       ),
       builder: (context) {
+        //BLOC
         final HomeBloc _bloc = HomeBloc(context);
         return Container(
           height: MediaQuery.of(context).size.height * 0.8,
@@ -55,6 +53,7 @@ class _AddFriendState extends State<AddFriend> {
     );
   }
 
+  //tile for the list of search results
   Widget addFriendsTile(String _name, String _email, HomeBloc _bloc) {
     return Container(
       child: Padding(
@@ -116,6 +115,7 @@ class _AddFriendState extends State<AddFriend> {
     );
   }
 
+  //add friends list that shows search results
   Widget addfriendsList(HomeBloc _bloc) {
     return Expanded(
       child: Padding(
@@ -174,6 +174,7 @@ class _AddFriendState extends State<AddFriend> {
     );
   }
   
+  //bottom sheet bar
   Widget bottomSheetSearchBar(
     BuildContext context,
     HomeBloc _bloc,
