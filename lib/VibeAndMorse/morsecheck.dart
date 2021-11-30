@@ -1,6 +1,6 @@
-class MorseCheck{
-  String check(String s){
-    switch(s){
+class MorseCheck {
+  String check(String s) {
+    switch (s) {
       case '.-':
         return 'a';
 
@@ -45,7 +45,7 @@ class MorseCheck{
 
       case '---':
         return 'o';
-      
+
       case '.--.':
         return 'p';
 
@@ -79,36 +79,6 @@ class MorseCheck{
       case '--..':
         return 'z';
 
-      case '.----':
-        return '1';
-
-      case '..---':
-        return '2';
-
-      case '...--':
-        return '3';
-
-      case '....-':
-        return '4';
-
-      case '.....':
-        return '5';
-
-      case '-....':
-        return '6';
-
-      case '--...':
-        return '7';
-
-      case '---..':
-        return '8';
-
-      case '----.':
-        return '9';
-
-      case '-----':
-        return '0';
-
       case '':
         return ' ';
 
@@ -121,6 +91,8 @@ class MorseCheck{
       case '.com':
         return '.com';
 
+      case ',':
+        return ',';
       default:
         return '';
     }

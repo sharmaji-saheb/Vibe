@@ -5,7 +5,6 @@ import 'HomeBloc.dart';
 
 //UI for add friend
 
-
 class AddFriend extends StatelessWidget {
   final ThemeFonts _fonts = ThemeFonts();
   Widget build(BuildContext context) {
@@ -65,22 +64,6 @@ class AddFriend extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                height: 55,
-                width: 55,
-                decoration: new BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: new DecorationImage(
-                    fit: BoxFit.fill,
-                    image: new NetworkImage(
-                      "https://i.imgur.com/BoN9kdC.png",
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
               Expanded(
                 child: Container(
                   child: Column(
@@ -173,7 +156,7 @@ class AddFriend extends StatelessWidget {
       ),
     );
   }
-  
+
   //bottom sheet bar
   Widget bottomSheetSearchBar(
     BuildContext context,

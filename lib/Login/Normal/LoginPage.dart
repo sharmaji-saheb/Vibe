@@ -26,6 +26,18 @@ class LoginPage extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          actions: [
+            GestureDetector(
+          onTap: _bloc.changeMode,
+          child: Icon(
+            Icons.vibration_outlined,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(
+          width: 25,
+        ),
+          ],
           elevation: 10,
           backgroundColor: Color(0xff292B2F),
           title: Text(

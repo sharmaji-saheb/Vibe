@@ -12,11 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   //run app
-  SharedPreferences.getInstance().then((value) {
-    value.setString('mode', 'special').then((value) {
-      runApp(App());
-    });
-  });
+  runApp(App());
 }
 
 // Future<void> main() async {

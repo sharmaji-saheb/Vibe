@@ -1,11 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:minor/Login/Special/SpecialLoginBloc.dart';
-import 'package:minor/Login/Special/SpecialTextField.dart';
 import 'package:minor/VibeAndMorse/morsecheck.dart';
 import 'package:minor/VibeAndMorse/vibe.dart';
-import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
 class SpecialEmailLogin extends StatefulWidget {
@@ -75,9 +74,41 @@ class _SpecialEmailLoginState extends State<SpecialEmailLogin> {
                 }
               },
               onHorizontalDragUpdate: (details) {
-                if (details.delta.dx > 11) {
-                  Navigator.of(context).pop();
+                print('horizontal');
+                if (details.delta.dx > 11 && snap.data!) {
+                  _bloc.activeSink.add(false);
+                  _bloc.isInTextSink.add(false);
                   Vibration.vibrate(duration: 1500);
+                  Future.delayed(Duration(milliseconds: 1500)).then((value) {
+                    _bloc.activeSink.add(true);
+                  });
+                }
+                if (details.delta.dx < -11 && snap.data!) {
+                  _bloc.activeSink.add(false);
+                  if (_morse.text.length != 0) {
+                    _morse.clear();
+                    Vibration.vibrate(duration: 750);
+                    Future.delayed(Duration(milliseconds: 750)).then((value) {
+                      _bloc.activeSink.add(true);
+                    });
+                  } else {
+                    if (index == 1 && _email.text.length > 1) {
+                      _email.text =
+                          _email.text.substring(0, _email.text.length - 2);
+                      Vibration.vibrate(duration: 750);
+                      Future.delayed(Duration(milliseconds: 750)).then((value) {
+                        _bloc.activeSink.add(true);
+                      });
+                    }
+                    if (index == 2) {
+                      _pass.text =
+                          _pass.text.substring(0, _pass.text.length - 2);
+                      Vibration.vibrate(duration: 750);
+                      Future.delayed(Duration(milliseconds: 750)).then((value) {
+                        _bloc.activeSink.add(true);
+                      });
+                    }
+                  }
                 }
               },
               onVerticalDragUpdate: (details) {
@@ -87,9 +118,10 @@ class _SpecialEmailLoginState extends State<SpecialEmailLogin> {
                 if (details.delta.dy < -sensitivity &&
                     snap.data! &&
                     index < 3) {
+                  print('object');
                   _bloc.activeSink.add(false);
                   _bloc.selectSink.add(index + 1);
-                  _vibes.vibrate(_states[index + 1][0]).then((value) {
+                  _vibes.vibrate(_states[index + 1]).then((value) {
                     _bloc.activeSink.add(true);
                   });
                 } else if (details.delta.dy > sensitivity &&
@@ -97,7 +129,7 @@ class _SpecialEmailLoginState extends State<SpecialEmailLogin> {
                     index > 1) {
                   _bloc.activeSink.add(false);
                   _bloc.selectSink.add(index - 1);
-                  _vibes.vibrate(_states[index - 1][0]).then((value) {
+                  _vibes.vibrate(_states[index - 1]).then((value) {
                     _bloc.activeSink.add(true);
                   });
                 }
@@ -118,12 +150,16 @@ class _SpecialEmailLoginState extends State<SpecialEmailLogin> {
   }
 
   Widget _textField(BuildContext context, SpecialLoginBloc _bloc) {
+    int lastTap = DateTime.now().millisecondsSinceEpoch;
+    int consecutiveTaps = 0;
     return StreamBuilder<int>(
+      initialData: 1,
       stream: _bloc.select,
       builder: (context, AsyncSnapshot<int> snapshot) {
         int index = snapshot.data!;
 
         return StreamBuilder<bool>(
+          initialData: false,
           stream: _bloc.active,
           builder: (context, AsyncSnapshot<bool> snap) {
             return SafeArea(
@@ -187,25 +223,34 @@ class _SpecialEmailLoginState extends State<SpecialEmailLogin> {
                       });
                     }
                     if (index == 1) {
+                      _bloc.activeSink.add(false);
                       print('morse: ' + _morse.text);
                       _email.text =
                           _email.text + _morseCheck.check(_morse.text);
                       _morse.text = '';
                       print('actual: ' + _email.text);
-                      _bloc.activeSink.add(true);
+                      Vibration.vibrate(duration: 400);
+                      Future.delayed(Duration(milliseconds: 400)).then((value) {
+                        _bloc.activeSink.add(true);
+                      });
                     }
                     if (index == 2) {
+                      _bloc.activeSink.add(false);
                       print('morse: ' + _morse.text);
                       _pass.text = _pass.text + _morseCheck.check(_morse.text);
                       _morse.text = '';
                       print('actual: ' + _pass.text);
-                      _bloc.activeSink.add(true);
+                      Vibration.vibrate(duration: 400);
+                      Future.delayed(Duration(milliseconds: 400)).then((value) {
+                        _bloc.activeSink.add(true);
+                      });
                     }
                   },
                   onHorizontalDragUpdate: (details) {
                     print('horizontal');
                     if (details.delta.dx > 11 && snap.data!) {
                       _bloc.activeSink.add(false);
+                      _morse.clear();
                       _bloc.isInTextSink.add(false);
                       Vibration.vibrate(duration: 1500);
                       Future.delayed(Duration(milliseconds: 1500))
@@ -214,31 +259,24 @@ class _SpecialEmailLoginState extends State<SpecialEmailLogin> {
                       });
                     }
                     if (details.delta.dx < -11 && snap.data!) {
-                      _bloc.activeSink.add(false);
-                      if (_morse.text.length != 0) {
+                      if (index == 1) {
+                        _bloc.activeSink.add(false);
+                        _email.clear();
                         _morse.clear();
-                        Vibration.vibrate(duration: 750);
-                        Future.delayed(Duration(milliseconds: 750))
+                        Vibration.vibrate(duration: 1500);
+                        Future.delayed(Duration(milliseconds: 1500))
                             .then((value) {
                           _bloc.activeSink.add(true);
                         });
-                      } else {
-                        if (index == 1 && _email.text.length > 1) {
-                          _email.text = _email.text.substring(0, _email.text.length - 2);
-                          Vibration.vibrate(duration: 750);
-                          Future.delayed(Duration(milliseconds: 750))
-                              .then((value) {
-                            _bloc.activeSink.add(true);
-                          });
-                        }
-                        if(index == 2){
-                          _pass.text = _pass.text.substring(0, _pass.text.length - 2);
-                          Vibration.vibrate(duration: 750);
-                          Future.delayed(Duration(milliseconds: 750))
-                              .then((value) {
-                            _bloc.activeSink.add(true);
-                          });
-                        }
+                      } else if (index == 2) {
+                        _bloc.activeSink.add(false);
+                        _pass.clear();
+                        _morse.clear();
+                        Vibration.vibrate(duration: 1500);
+                        Future.delayed(Duration(milliseconds: 1500))
+                            .then((value) {
+                          _bloc.activeSink.add(true);
+                        });
                       }
                     }
                   },

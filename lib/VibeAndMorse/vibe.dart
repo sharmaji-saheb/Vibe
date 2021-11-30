@@ -154,9 +154,9 @@ class Vibes{
 
   Future<void> wrongVibe()async{
     await Vibration.vibrate(duration: 50);
-    await Future.delayed(Duration(milliseconds: 50));
+    await Future.delayed(Duration(milliseconds: 150));
     await Vibration.vibrate(duration: 50);
-    await Future.delayed(Duration(milliseconds: 50));
+    await Future.delayed(Duration(milliseconds: 150));
     await Vibration.vibrate(duration: 50);
   }
 
