@@ -1,9 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:minor/ChatRoom/ChatRoomBloc.dart';
+import 'package:minor/ChatRoom/Normal/ChatRoomBloc.dart';
 import 'package:minor/Themes/Fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SendChat {
   /*
@@ -11,7 +8,7 @@ class SendChat {
   */
   //fonts
   final ThemeFonts _fonts = ThemeFonts();
-  
+
   /*
     ***WIDGETS***
   */
@@ -40,7 +37,13 @@ class SendChat {
                 Icons.send_outlined,
                 color: Colors.white,
               ),
-              onTap: (){_bloc.sendChat(path, chatcontroller);},
+              onTap: () {
+                if (chatcontroller.text != null) {
+                  if (chatcontroller.text != '') {
+                    _bloc.sendChat(path, chatcontroller);
+                  }
+                }
+              },
             ),
           ),
           contentPadding: EdgeInsets.only(

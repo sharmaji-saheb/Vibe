@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,44 +58,86 @@ class HomeBloc {
     }
   }
 
+  changeMode() {
+    showDialog(
+      context: _context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('change mode'),
+          content: Text(
+              'Are you sure you want to change to special mode?\nIf yes press ok'),
+          actions: [
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                SharedPreferences.getInstance().then((value) {
+                  value.setString('mode', 'special');
+                }).then((value) {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: Text('restart the app for changes to apply'),
+                      );
+                    },
+                  );
+                });
+              },
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('cancel'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   //adding new friend, ie chatroom for new chat
   addFriend(String _otherEmail, String _otherName) {
     print('pressed');
     SharedPreferences.getInstance().then((value) {
       String? _email = value.getString('email');
       String? _name = value.getString('name');
-      FirebaseFirestore.instance
-          .collection('chatRooms')
-          .doc('${_email}&&${_otherEmail}')
-          .get()
-          .then((value) {
-        if (!value.exists) {
-          FirebaseFirestore.instance
-              .collection('chatRooms')
-              .doc('${_otherEmail}&&${_email}')
-              .get()
-              .then((value) {
-            if (!value.exists) {
-              FirebaseFirestore.instance
-                  .collection('chatRooms')
-                  .doc('${_email}&&${_otherEmail}')
-                  .set({
-                'email': [_email, _otherEmail],
-                'names': {'${_email}': _name, '${_otherEmail}': _otherName},
-                'index': 0,
-                'latestTime': 0
-              }).then((value){
-                FirebaseFirestore.instance
+      if (_email != _otherEmail) {
+        FirebaseFirestore.instance
+            .collection('chatRooms')
+            .doc('${_email}&&${_otherEmail}')
+            .get()
+            .then((value) {
+          if (!value.exists) {
+            FirebaseFirestore.instance
                 .collection('chatRooms')
-                .doc('${_email}&&${_otherEmail}')
-                .collection('messages')
-                .doc('messages')
-                .set({});
-              });
-            }
-          });
-        }
-      });
+                .doc('${_otherEmail}&&${_email}')
+                .get()
+                .then((value) {
+              if (!value.exists) {
+                FirebaseFirestore.instance
+                    .collection('chatRooms')
+                    .doc('${_email}&&${_otherEmail}')
+                    .set({
+                  'email': [_email, _otherEmail],
+                  'names': {'${_email}': _name, '${_otherEmail}': _otherName},
+                  'index': 0,
+                  'latestTime': 0,
+                  'seen': {'${_email}': 0, '${_otherEmail}': 0},
+                }).then((value) {
+                  FirebaseFirestore.instance
+                      .collection('chatRooms')
+                      .doc('${_email}&&${_otherEmail}')
+                      .collection('messages')
+                      .doc('messages')
+                      .set({});
+                });
+              }
+            });
+          }
+        });
+      }
     });
   }
 

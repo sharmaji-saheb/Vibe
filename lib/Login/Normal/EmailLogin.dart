@@ -49,6 +49,7 @@ class _EmailLoginState extends State<EmailLogin> {
         appBar: AppBar(
           elevation: 10,
 
+
           //Gesture Detector for navigating back
           leading: GestureDetector(
             child: Icon(

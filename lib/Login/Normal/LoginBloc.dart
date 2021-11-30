@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +18,8 @@ class LoginBloc {
     _auth = Provider.of<FirebaseAuth>(context, listen: false);
 
     _landingStreamController = Provider.of<StreamController<int>>(context, listen: false);
+
+    _context = context;
   }
 
   /*
@@ -25,7 +28,7 @@ class LoginBloc {
   //StreamController to communicate with landing page
   late final StreamController<int> _landingStreamController;
   //Build Context
-  late final BuildContext context;
+  late final BuildContext _context;
 
   //Firebase auth instance
   late final FirebaseAuth _auth;
@@ -36,6 +39,46 @@ class LoginBloc {
   /*
   ***METHODS***
   */
+  changeMode() {
+    showDialog(
+      context: _context,
+      builder: (_context) {
+        return AlertDialog(
+          title: Text('change mode'),
+          content: Text(
+              'Are you sure you want to change to special mode?\nIf yes press ok'),
+          actions: [
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                SharedPreferences.getInstance().then((value) {
+                  value.setString('mode', 'special');
+                }).then((value) {
+                  Navigator.pop(_context);
+                  showDialog(
+                    context: _context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: Text('restart the app for changes to apply'),
+                      );
+                    },
+                  );
+                });
+              },
+            ),
+
+            TextButton(
+              onPressed: (){
+                Navigator.pop(_context);
+              },
+              child: Text('cancel'),
+            )
+          ],
+        );
+      },
+    );
+  }
+  
   googleSignIn() async {
     GoogleSignInAccount? acc = await _google.signIn();
     if (acc == null) return;

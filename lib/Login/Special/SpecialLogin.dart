@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minor/VibeAndMorse/vibe.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 
 import 'SpecialLoginBloc.dart';
@@ -19,6 +20,23 @@ class _SpecialLoginState extends State<SpecialLogin> {
   Widget build(BuildContext context) {
     final SpecialLoginBloc _bloc = SpecialLoginBloc(context);
     return GestureDetector(
+      onDoubleTap: () {
+        if (button == 'mode' && _gestureEnabled == 1) {
+          Vibration.vibrate(duration: 1500);
+          Future.delayed(Duration(milliseconds: 1500)).then((value) {
+            SharedPreferences.getInstance().then((value) {
+              value.setString('mode', 'normal');
+              Future.delayed(Duration(milliseconds: 500)).then((value) {
+                _vibe.vibrate('restart the app').then((value) {
+                  setState(() {
+                    _gestureEnabled = 1;
+                  });
+                });
+              });
+            });
+          });
+        }
+      },
       onTap: () {
         if (button == 'google' && _gestureEnabled == 1) {
           _bloc.gooogleSignIn();
@@ -40,7 +58,15 @@ class _SpecialLoginState extends State<SpecialLogin> {
             if (button == 'email' && _gestureEnabled == 1) {
               _gestureEnabled = 0;
               button = 'google';
-              _vibe.vibrate('g').then((value) {
+              _vibe.vibrate('google').then((value) {
+                setState(() {
+                  _gestureEnabled = 1;
+                });
+              });
+            } else if (button == 'mode' && _gestureEnabled == 1) {
+              _gestureEnabled = 0;
+              button = 'email';
+              _vibe.vibrate('email').then((value) {
                 setState(() {
                   _gestureEnabled = 1;
                 });
@@ -52,7 +78,7 @@ class _SpecialLoginState extends State<SpecialLogin> {
             if (button == '') {
               _gestureEnabled = 0;
               button = 'google';
-              _vibe.vibrate('g').then((value) {
+              _vibe.vibrate('google').then((value) {
                 setState(() {
                   _gestureEnabled = 1;
                 });
@@ -61,7 +87,16 @@ class _SpecialLoginState extends State<SpecialLogin> {
             if (button == 'google' && _gestureEnabled == 1) {
               _gestureEnabled = 0;
               button = 'email';
-              _vibe.vibrate('e').then((value) {
+              _vibe.vibrate('email').then((value) {
+                setState(() {
+                  _gestureEnabled = 1;
+                });
+              });
+            }
+            if (button == 'email' && _gestureEnabled == 1) {
+              _gestureEnabled = 0;
+              button = 'mode';
+              _vibe.vibrate('mode').then((value) {
                 setState(() {
                   _gestureEnabled = 1;
                 });
