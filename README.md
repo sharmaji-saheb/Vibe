@@ -1,16 +1,9 @@
-# minor
+# Android Chat Application for Blind & Deaf
 
-A new Flutter project.
+This android chat application is made for blind and deaf people. Deaf people can without any problem use any chat application. Blind people can use accessability option available in each android phone, and can use any app. But these options are not availabe for people who are blind and deaf. So we created an app that will allow people who cant see and hear and have basic knowledge of language.
 
-## Getting Started
+## Workking
+This app has two modes. One is normal chat app with basic chat app ui. People without any disabilities can use this mode. 
+Other mode is for blind and deaf people. Everything is conveyed via modile vibrations to the user. And user gives input with help of basic gestures like tap, double tap, swipe in 4 directions etc. To tell what option they are on or to convey the message is recieved, mobile vibrates in pattern of morse code. Dot is conveyed with shorter vibration and dash with longer vibration.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## This application was made using flutter
