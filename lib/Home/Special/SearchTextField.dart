@@ -103,6 +103,7 @@ class _SpecialTextFieldState extends State<SpecialTextField> {
                       Future.delayed(Duration(milliseconds: 400)).then((value) {
                         _bloc.activeSink.add(true);
                       });
+                    }
                   }
                 },
                 onHorizontalDragUpdate: (details) {
