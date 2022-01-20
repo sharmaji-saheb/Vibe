@@ -8,5 +8,7 @@ Other mode is for blind and deaf people. Everything is conveyed via modile vibra
 
 ## Technical Information
 Flutter is used for this android app
+
 Firebase authentication is used for sign in
+
 Firestore for storage
